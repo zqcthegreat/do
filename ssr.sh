@@ -208,7 +208,7 @@ pre_install(){
     dport=$(shuf -i 9000-19999 -n 1)
     echo -e "Please enter a port for ShadowsocksR [1-65535]"
 	
-	${shadowsocksport}=6666
+	${shadowsocksport}="6666"
 	
 
             echo
