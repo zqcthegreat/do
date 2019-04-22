@@ -19,6 +19,12 @@ echo "# Github: https://github.com/shadowsocksr/shadowsocksr      #"
 echo "#############################################################"
 echo
 
+
+
+
+
+
+
 libsodium_file="libsodium-1.0.17"
 libsodium_url="https://github.com/jedisct1/libsodium/releases/download/1.0.17/libsodium-1.0.17.tar.gz"
 shadowsocks_r_file="shadowsocksr-3.2.2"
@@ -193,30 +199,38 @@ pre_install(){
         echo -e "[${red}Error${plain}] Your OS is not supported. please change OS to CentOS/Debian/Ubuntu and try again."
         exit 1
     fi
+	
+	
     # Set ShadowsocksR config password
     echo "Please enter password for ShadowsocksR:"
-    
-	${shadowsockspwd}="good666"
+    read -p "(Default password: teddysun.com):" shadowsockspwd
+    [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
     echo
     echo "---------------------------"
     echo "password = ${shadowsockspwd}"
     echo "---------------------------"
     echo
     # Set ShadowsocksR config port
+	
+	
+	
     while true
     do
     dport=$(shuf -i 9000-19999 -n 1)
     echo -e "Please enter a port for ShadowsocksR [1-65535]"
-	
-	${shadowsocksport}="6666"
-	
-
+    read -p "(Default port: ${dport}):" shadowsocksport
+    [ -z "${shadowsocksport}" ] && shadowsocksport=${dport}
+    expr ${shadowsocksport} + 1 &>/dev/null
+    if [ $? -eq 0 ]; then
+        if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
             echo
             echo "---------------------------"
             echo "port = ${shadowsocksport}"
             echo "---------------------------"
             echo
-
+            break
+        fi
+    fi
     echo -e "[${red}Error${plain}] Please enter a correct number [1-65535]"
     done
 
@@ -228,10 +242,8 @@ pre_install(){
         hint="${ciphers[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-
-	${pick}=2
-	
-	
+    read -p "Which cipher you'd select(Default: ${ciphers[1]}):" pick
+    [ -z "$pick" ] && pick=2
     expr ${pick} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Please enter a number"
@@ -258,12 +270,8 @@ pre_install(){
         hint="${protocols[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-
-
-	${protocol}=1
-
-
-
+    read -p "Which protocol you'd select(Default: ${protocols[0]}):" protocol
+    [ -z "$protocol" ] && protocol=1
     expr ${protocol} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Input error, please input a number"
@@ -290,9 +298,8 @@ pre_install(){
         hint="${obfs[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-
-	${r_obfs}=1
-
+    read -p "Which obfs you'd select(Default: ${obfs[0]}):" r_obfs
+    [ -z "$r_obfs" ] && r_obfs=1
     expr ${r_obfs} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Input error, please input a number"
@@ -313,7 +320,7 @@ pre_install(){
 
     echo
     echo "Press any key to start...or Press Ctrl+C to cancel"
-
+    char=`get_char`
     # Install necessary dependencies
     if check_sys packageManager yum; then
         yum install -y python python-devel python-setuptools openssl openssl-devel curl wget unzip gcc automake autoconf make libtool
@@ -491,10 +498,45 @@ uninstall_shadowsocksr(){
     fi
 }
 
+sett(){
+    if check_sys packageManager yum || check_sys packageManager apt; then
+        # Not support CentOS 5
+        if centosversion 5; then
+            echo -e "$[{red}Error${plain}] Not supported CentOS 5, please change to CentOS 6+/Debian 7+/Ubuntu 12+ and try again."
+            exit 1
+        fi
+    else
+        echo -e "[${red}Error${plain}] Your OS is not supported. please change OS to CentOS/Debian/Ubuntu and try again."
+        exit 1
+    fi
+
+
+
+    shadowsocksport="6666"
+    shadowsockspwd="good666"
+    shadowsockprotocol="origin"
+    shadowsockobfs="plain"
+    shadowsockscipher="aes-256-cfb"    
+	
+	
+	
+	
+	
+    # Install necessary dependencies
+    if check_sys packageManager yum; then
+        yum install -y python python-devel python-setuptools openssl openssl-devel curl wget unzip gcc automake autoconf make libtool
+    elif check_sys packageManager apt; then
+        apt-get -y update
+        apt-get -y install python python-dev python-setuptools openssl libssl-dev curl wget unzip gcc automake autoconf make libtool
+    fi
+    cd ${cur_dir}
+}
+
 # Install ShadowsocksR
 install_shadowsocksr(){
     disable_selinux
-    pre_install
+    #pre_install
+	sett
     download_files
     config_shadowsocks
     if check_sys packageManager yum; then
