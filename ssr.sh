@@ -210,17 +210,13 @@ pre_install(){
 	
 	${shadowsocksport}=6666
 	
-    expr ${shadowsocksport} + 1 &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
+
             echo
             echo "---------------------------"
             echo "port = ${shadowsocksport}"
             echo "---------------------------"
             echo
-            break
-        fi
-    fi
+
     echo -e "[${red}Error${plain}] Please enter a correct number [1-65535]"
     done
 
