@@ -195,8 +195,8 @@ pre_install(){
     fi
     # Set ShadowsocksR config password
     echo "Please enter password for ShadowsocksR:"
-    read -p "(Default password: teddysun.com):" shadowsockspwd
-    [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
+    
+	${shadowsockspwd}="good666"
     echo
     echo "---------------------------"
     echo "password = ${shadowsockspwd}"
@@ -207,8 +207,7 @@ pre_install(){
     do
     dport=$(shuf -i 9000-19999 -n 1)
     echo -e "Please enter a port for ShadowsocksR [1-65535]"
-    read -p "(Default port: ${dport}):" shadowsocksport
-    [ -z "${shadowsocksport}" ] && shadowsocksport=${dport}
+	${shadowsocksport}
     expr ${shadowsocksport} + 1 &>/dev/null
     if [ $? -eq 0 ]; then
         if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
@@ -231,8 +230,10 @@ pre_install(){
         hint="${ciphers[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-    read -p "Which cipher you'd select(Default: ${ciphers[1]}):" pick
-    [ -z "$pick" ] && pick=2
+
+	${pick}=2
+	
+	
     expr ${pick} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Please enter a number"
@@ -259,8 +260,12 @@ pre_install(){
         hint="${protocols[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-    read -p "Which protocol you'd select(Default: ${protocols[0]}):" protocol
-    [ -z "$protocol" ] && protocol=1
+
+
+	${protocol}=1
+
+
+
     expr ${protocol} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Input error, please input a number"
@@ -287,8 +292,9 @@ pre_install(){
         hint="${obfs[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-    read -p "Which obfs you'd select(Default: ${obfs[0]}):" r_obfs
-    [ -z "$r_obfs" ] && r_obfs=1
+
+	${r_obfs}=1
+
     expr ${r_obfs} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Input error, please input a number"
@@ -309,7 +315,7 @@ pre_install(){
 
     echo
     echo "Press any key to start...or Press Ctrl+C to cancel"
-    char=`get_char`
+
     # Install necessary dependencies
     if check_sys packageManager yum; then
         yum install -y python python-devel python-setuptools openssl openssl-devel curl wget unzip gcc automake autoconf make libtool
